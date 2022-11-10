@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D755204E29000AFE00B780FE /* Point.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D755204C29000AFE00B780FE /* Point.cpp */; };
+		D755205029000B5E00B780FE /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D755204F29000B5E00B780FE /* Color.cpp */; };
 		D7A5BEF928FF6B39001B05E9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7A5BEF828FF6B39001B05E9 /* main.cpp */; };
 		D7A5BF0128FF6B64001B05E9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7A5BF0028FF6B64001B05E9 /* OpenGL.framework */; };
 		D7A5BF0328FF6B6B001B05E9 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7A5BF0228FF6B6B001B05E9 /* GLUT.framework */; };
@@ -26,13 +28,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D7A5BEF528FF6B39001B05E9 /* Computer_grafik_1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Computer_grafik_1; sourceTree = BUILT_PRODUCTS_DIR; };
+		D755204C29000AFE00B780FE /* Point.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Point.cpp; sourceTree = "<group>"; };
+		D755204F29000B5E00B780FE /* Color.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
+		D7A5BEF528FF6B39001B05E9 /* Computer_grafik_2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Computer_grafik_2; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7A5BEF828FF6B39001B05E9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		D7A5BF0028FF6B64001B05E9 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		D7A5BF0228FF6B6B001B05E9 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		D7A5BF0428FF6B8E001B05E9 /* glut32.lib */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = glut32.lib; path = ../../Uebung1/Uebung1/glut32.lib; sourceTree = "<group>"; };
 		D7A5BF0528FF6B8E001B05E9 /* glut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = glut.h; path = ../../Uebung1/Uebung1/glut.h; sourceTree = "<group>"; };
 		D7A5BF0628FF6B8E001B05E9 /* glut32.dll */ = {isa = PBXFileReference; lastKnownFileType = file; name = glut32.dll; path = ../../Uebung1/Uebung1/glut32.dll; sourceTree = "<group>"; };
+		D7E0F3CC29180CC4007D2413 /* mat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mat.h; sourceTree = "<group>"; };
+		D7E0F3CD29180D0C007D2413 /* vec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vec.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +58,7 @@
 		D7A5BEEC28FF6B39001B05E9 = {
 			isa = PBXGroup;
 			children = (
-				D7A5BEF728FF6B39001B05E9 /* Computer_grafik_1 */,
+				D7A5BEF728FF6B39001B05E9 /* Computer_grafik_2 */,
 				D7A5BEF628FF6B39001B05E9 /* Products */,
 				D7A5BEFF28FF6B64001B05E9 /* Frameworks */,
 			);
@@ -61,20 +67,24 @@
 		D7A5BEF628FF6B39001B05E9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D7A5BEF528FF6B39001B05E9 /* Computer_grafik_1 */,
+				D7A5BEF528FF6B39001B05E9 /* Computer_grafik_2 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D7A5BEF728FF6B39001B05E9 /* Computer_grafik_1 */ = {
+		D7A5BEF728FF6B39001B05E9 /* Computer_grafik_2 */ = {
 			isa = PBXGroup;
 			children = (
 				D7A5BEF828FF6B39001B05E9 /* main.cpp */,
+				D755204C29000AFE00B780FE /* Point.cpp */,
+				D755204F29000B5E00B780FE /* Color.cpp */,
 				D7A5BF0528FF6B8E001B05E9 /* glut.h */,
+				D7E0F3CC29180CC4007D2413 /* mat.h */,
 				D7A5BF0628FF6B8E001B05E9 /* glut32.dll */,
 				D7A5BF0428FF6B8E001B05E9 /* glut32.lib */,
+				D7E0F3CD29180D0C007D2413 /* vec.h */,
 			);
-			path = Computer_grafik_1;
+			path = Computer_grafik_2;
 			sourceTree = "<group>";
 		};
 		D7A5BEFF28FF6B64001B05E9 /* Frameworks */ = {
@@ -89,9 +99,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D7A5BEF428FF6B39001B05E9 /* Computer_grafik_1 */ = {
+		D7A5BEF428FF6B39001B05E9 /* Computer_grafik_2 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D7A5BEFC28FF6B39001B05E9 /* Build configuration list for PBXNativeTarget "Computer_grafik_1" */;
+			buildConfigurationList = D7A5BEFC28FF6B39001B05E9 /* Build configuration list for PBXNativeTarget "Computer_grafik_2" */;
 			buildPhases = (
 				D7A5BEF128FF6B39001B05E9 /* Sources */,
 				D7A5BEF228FF6B39001B05E9 /* Frameworks */,
@@ -101,9 +111,9 @@
 			);
 			dependencies = (
 			);
-			name = Computer_grafik_1;
+			name = Computer_grafik_2;
 			productName = Computer_grafik_1;
-			productReference = D7A5BEF528FF6B39001B05E9 /* Computer_grafik_1 */;
+			productReference = D7A5BEF528FF6B39001B05E9 /* Computer_grafik_2 */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -120,7 +130,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D7A5BEF028FF6B39001B05E9 /* Build configuration list for PBXProject "Computer_grafik_1" */;
+			buildConfigurationList = D7A5BEF028FF6B39001B05E9 /* Build configuration list for PBXProject "Computer_grafik_2" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -133,7 +143,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D7A5BEF428FF6B39001B05E9 /* Computer_grafik_1 */,
+				D7A5BEF428FF6B39001B05E9 /* Computer_grafik_2 */,
 			);
 		};
 /* End PBXProject section */
@@ -143,6 +153,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D755204E29000AFE00B780FE /* Point.cpp in Sources */,
+				D755205029000B5E00B780FE /* Color.cpp in Sources */,
 				D7A5BEF928FF6B39001B05E9 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -278,7 +290,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D7A5BEF028FF6B39001B05E9 /* Build configuration list for PBXProject "Computer_grafik_1" */ = {
+		D7A5BEF028FF6B39001B05E9 /* Build configuration list for PBXProject "Computer_grafik_2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D7A5BEFA28FF6B39001B05E9 /* Debug */,
@@ -287,7 +299,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D7A5BEFC28FF6B39001B05E9 /* Build configuration list for PBXNativeTarget "Computer_grafik_1" */ = {
+		D7A5BEFC28FF6B39001B05E9 /* Build configuration list for PBXNativeTarget "Computer_grafik_2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D7A5BEFD28FF6B39001B05E9 /* Debug */,
