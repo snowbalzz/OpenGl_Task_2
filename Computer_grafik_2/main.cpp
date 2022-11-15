@@ -1,14 +1,13 @@
-//////////////////////////////////////////////// /////////////////////
-// //
-// Code framework for lecture computer graphics WS 2022/23 Exercise 1 //
-// //
-//////////////////////////////////////////////// /////////////////////
+
 #define GL_SILENCE_DEPRECATION
 #include "vec.h"
 #include "mat.h"
 #include "glut.h"
+
 #include "Point.cpp"
+#include "Point_h.cpp"
 #include "Color.cpp"
+
 #include <stdlib.h>
 #include <cmath>
 #include <iostream>
@@ -25,63 +24,63 @@ const int g_iHeight = 400;
 // global variable to tune the timer interval
 int g_iTimerMSecs;
 
-//
-/////////////////////////////////////////////////////////////
-
 ////////////////////////////////////////////////////////////
 //
 // private, global variables ... replace by your own ones
 //
-// some global state variables used to describe ...
-float g_iPos;        // ... position and ...
-float g_iPosIncr;    // ... position increment (used in display1)
 float r_direction;
+float w_const;
 
 //Main points
 Point Sun;
 Point Earth;
 Point Moon;
 
-CVec2i g_vecPos;        // same as above but in vector form ...
-CVec2i g_vecPosIncr;    // (used in display2)
+Point_h Sun_h_2;
+Point_h Earth_h_2;
+Point_h Moon_h_2;
+
+Point Sun_h;
+Point Earth_h;
+Point Moon_h;
 
 Color cRed(0.5, 0.1, 0.1);
 Color cGreen(0.1, 0.5, 0.1);
 Color cBlue(0.1, 0.1, 0.5);
 Color cWhite(1, 1, 1);
-//
-/////////////////////////////////////////////////////////////
 
 // function to initialize our own variables
 void init ()
 {
-
     // init timer interval
     g_iTimerMSecs = 10;
-
-    // init variables for display1
-    g_iPos     = 0;
-    g_iPosIncr = 2;
     
-    //rotation direction
+    //Init variable of solar systems
+    //Display 1
     r_direction= 1;
-
-    // init variable of solar system
     Sun.x = 0;
     Sun.y = 0;
-    
     Earth.x = 100;
     Earth.y = 0;
-    
     Moon.x = 150;
     Moon.y = 0;
     
-    // init variables for display2
-    int aiPos    [2] = {0, 0};
-    int aiPosIncr[2] = {2, 2};
+    //Display 2
+    w_const = 1.5;
+    if(w_const == 0) {
+        throw std::invalid_argument("W parametr can not be 0!");
+    }
     
-    g_vecPos.setData (aiPos);
-    g_vecPosIncr.setData (aiPosIncr);
+    Sun_h.x = Sun.x/w_const;
+    Sun_h.y = Sun.y/w_const;
+    Earth_h.x = Earth.x/w_const;
+    Earth_h.y = Earth.y/w_const;
+    Moon_h.x = Moon.x/w_const;
+    Moon_h.y = Moon.y/w_const;
+    
+    // init variables for display2
+//    int aiPos    [2] = {0, 0};
+//    int aiPosIncr[2] = {10, 10};
 }
 
 // function to initialize the view to ortho-projection
@@ -104,7 +103,7 @@ void initGL ()
 
 int min (int a, int b) { return a>b? a: b; }
 
-Point rotateAroundPt(Point rp, Point cp, float theta)
+Point rotateAroundPtRegular(Point rp, Point cp, float theta)
 {
     Point fxy(
               ((rp.x - cp.x) * cos(theta*r_direction)) - ((rp.y - cp.y) * sin(theta*r_direction)) + cp.x,
@@ -114,30 +113,25 @@ Point rotateAroundPt(Point rp, Point cp, float theta)
     return fxy;
 }
 
+Point_h rotateAroundPtHomo(Point_h rp, Point_h cp, float theta)
+{
+    
+    rp.x =((rp.x - cp.x) * cos(theta*r_direction)) - ((rp.y - cp.y) * sin(theta*r_direction)) + cp.x;
+    rp.y =((rp.x - cp.x) * sin(theta*r_direction)) + ((rp.y - cp.y) * cos(theta*r_direction)) + cp.y;
+    
+    return rp;
+}
+
 // timer callback function
 void timer (int value)
 {
-    ///////
-    // update your variables here ...
-    //
+
+    //Display 1
+    Earth = rotateAroundPtRegular(Earth, Sun,  0.01745329252);
+    Moon = rotateAroundPtRegular(Moon, Earth,  0.3490658504);
     
-    Earth = rotateAroundPt(Earth, Sun,  0.01745329252);
-    Moon = rotateAroundPt(Moon, Earth,  0.3490658504);
-
-
-
-    int size2 = min (g_iWidth, g_iHeight) / 2;
-
-    // variables for display1 ...
-    if (g_iPos<=-size2 || g_iPos>=size2) g_iPosIncr = -g_iPosIncr;
-    g_iPos += g_iPosIncr;
-
-    // variables for display2 ...
-    if (g_vecPos(1)<=-size2 || g_vecPos(1)>=size2) g_vecPosIncr = -g_vecPosIncr;
-    g_vecPos += g_vecPosIncr;
-
-    //
-    ///////
+    Earth_h = rotateAroundPtRegular(Earth_h, Sun_h,  0.01745329252);
+    Moon_h = rotateAroundPtRegular(Moon_h, Earth_h,  0.3490658504);
 
     // the last two lines should always be
     glutPostRedisplay ();
@@ -148,6 +142,7 @@ void plotCircle(int x, int y, int px, int py, Color c){
     
     glBegin (GL_POINTS);
     
+    //Hate this part of the code
     Point xy0(x+px,y+py);
     glColor3f (c.r, c.g, c.b);
     glVertex2i (xy0.x, xy0.y);
@@ -213,20 +208,48 @@ void bresenhamCircle(Point mp, int r, Color c){
     glEnd ();
 }
 
+void bresenhamCircleHomo(Point_h mp, int r, Color c){
+    glBegin (GL_POINTS);
+    
+    int x, y, p, d, DSE, DE;
+
+    p = 0;
+    x = p;
+    y = r;
+    d = 5 - 4*r;
+    
+    plotCircle(x, y, mp.x, mp.y, c);
+    
+    while (y>x) {
+        if (d>=0)
+        {
+            DSE = 4*(2*(x-y)+5);
+            d += DSE;
+            x++;
+            y--;
+        } // SE
+        else {
+            DE = 4*(2*x+3);
+            d +=DE ;
+            x++;
+        } // E
+        plotCircle(x, y, mp.x, mp.y, c);
+    }
+    glEnd ();
+}
+
 // display callback function
 void display1 (void)
 {
-
     glClear (GL_COLOR_BUFFER_BIT);
 
+    //Completed the First task
     bresenhamCircle(Sun, 25, cRed);
     bresenhamCircle(Earth, 15, cGreen);
     bresenhamCircle(Moon, 7, cWhite);
 
-    // In double buffer mode the last
-    // two lines should alsways be
     glFlush ();
-    glutSwapBuffers (); // swap front and back buffer
+    glutSwapBuffers ();
 }
 
 
@@ -234,29 +257,14 @@ void display1 (void)
 void display2 (void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
-
-    ///////
-    // display your data here ...
-    //
     
-    glBegin (GL_QUADS);
-        glColor3f (1,0,0);
-        glVertex2i (-g_vecPos(1), -g_vecPos(2));
-        glColor3f (0,1,0);
-        glVertex2i (g_vecPos(1), -g_vecPos(2));
-        glColor3f (0,0,1);
-        glVertex2i (g_vecPos(1), g_vecPos(2));
-        glColor3f (1,1,0);
-        glVertex2i (-g_vecPos(1), g_vecPos(2));
-    glEnd ();
-
-    //
-    ///////
-
-    // In double buffer mode the last
-    // two lines should alsways be
+    //2nd Tasks implementation here
+    bresenhamCircle(Sun_h, 25, cRed);
+    bresenhamCircle(Earth_h, 15, cGreen);
+    bresenhamCircle(Moon_h, 7, cWhite);
+    
     glFlush ();
-    glutSwapBuffers (); // swap front and back buffer
+    glutSwapBuffers ();
 }
 
 void keyboard (unsigned char key, int x, int y)
@@ -268,18 +276,16 @@ void keyboard (unsigned char key, int x, int y)
             break;
         case '1':
             glutDisplayFunc (display1);
-            //glutPostRedisplay ();    // not needed since timer triggers redisplay
             break;
         case '2':
-            r_direction = -1;
             glutDisplayFunc (display2);
-            //glutPostRedisplay ();    // not needed since timer triggers redisplay
             break;
         case '3':
-            r_direction = 1;
-            break;
-        case '4':
-            r_direction = -1;
+            if(r_direction == 1){
+                r_direction = -1;
+            } else {
+                r_direction = 1;
+            }
             break;
         default:
             // do nothing ...
@@ -301,7 +307,7 @@ int main (int argc, char **argv)
     // assign callbacks
     glutTimerFunc (10, timer, 0);
     glutKeyboardFunc (keyboard);
-    glutDisplayFunc (display1);
+    glutDisplayFunc (display2);
     // you might want to add a resize function analog to
     // �bung1 using code similar to the initGL function ...
 

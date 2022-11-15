@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		D755204E29000AFE00B780FE /* Point.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D755204C29000AFE00B780FE /* Point.cpp */; };
 		D755205029000B5E00B780FE /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D755204F29000B5E00B780FE /* Color.cpp */; };
+		D780B389291D1A640031CE0C /* Point_h.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D780B388291D1A640031CE0C /* Point_h.cpp */; };
 		D7A5BEF928FF6B39001B05E9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7A5BEF828FF6B39001B05E9 /* main.cpp */; };
 		D7A5BF0128FF6B64001B05E9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7A5BF0028FF6B64001B05E9 /* OpenGL.framework */; };
 		D7A5BF0328FF6B6B001B05E9 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7A5BF0228FF6B6B001B05E9 /* GLUT.framework */; };
@@ -30,6 +31,7 @@
 /* Begin PBXFileReference section */
 		D755204C29000AFE00B780FE /* Point.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Point.cpp; sourceTree = "<group>"; };
 		D755204F29000B5E00B780FE /* Color.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
+		D780B388291D1A640031CE0C /* Point_h.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Point_h.cpp; sourceTree = "<group>"; };
 		D7A5BEF528FF6B39001B05E9 /* Computer_grafik_2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Computer_grafik_2; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7A5BEF828FF6B39001B05E9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		D7A5BF0028FF6B64001B05E9 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -77,6 +79,7 @@
 			children = (
 				D7A5BEF828FF6B39001B05E9 /* main.cpp */,
 				D755204C29000AFE00B780FE /* Point.cpp */,
+				D780B388291D1A640031CE0C /* Point_h.cpp */,
 				D755204F29000B5E00B780FE /* Color.cpp */,
 				D7A5BF0528FF6B8E001B05E9 /* glut.h */,
 				D7E0F3CC29180CC4007D2413 /* mat.h */,
@@ -154,6 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D755204E29000AFE00B780FE /* Point.cpp in Sources */,
+				D780B389291D1A640031CE0C /* Point_h.cpp in Sources */,
 				D755205029000B5E00B780FE /* Color.cpp in Sources */,
 				D7A5BEF928FF6B39001B05E9 /* main.cpp in Sources */,
 			);
