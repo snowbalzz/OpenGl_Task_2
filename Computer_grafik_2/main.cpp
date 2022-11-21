@@ -24,32 +24,25 @@ const int g_iHeight = 400;
 // global variable to tune the timer interval
 int g_iTimerMSecs;
 
-CVec3b sun;
-
 ////////////////////////////////////////////////////////////
 //
-// private, global variables ... replace by your own ones
+// Variables
 //
-float r_direction;
-float w_const;
-
+//Display 2
 Point Sun_m;
 Point Earth_m;
 Point Moon_m;
 
-//Main points
+//Display 1
 Point Sun;
 Point Earth;
 Point Moon;
 
-Point Translate;
-
+// Pre-set color
 Color cRed(0.5, 0.1, 0.1);
 Color cGreen(0.1, 0.5, 0.1);
 Color cBlue(0.1, 0.1, 0.5);
 Color cWhite(1, 1, 1);
-
-bool t_done;
 
 // function to initialize our own variables
 void init ()
@@ -57,9 +50,6 @@ void init ()
     // init timer interval
     g_iTimerMSecs = 10;
     
-    //Init variable of solar systems
-    //Display 1
-    r_direction= 1;
     Sun.x = 0;
     Sun.y = 0;
     Earth.x = 100;
@@ -67,26 +57,12 @@ void init ()
     Moon.x = 150;
     Moon.y = 0;
     
-    
     Sun_m.x = 0;
     Sun_m.y = 0;
     Earth_m.x = 100;
     Earth_m.y = 0;
     Moon_m.x = 150;
     Moon_m.y = 0;
-    
-    //Display 2
-//    w_const = 1;
-//    if(w_const == 0) {
-//        throw std::invalid_argument("W parametr can not be 0!");
-//    }
-    
-    Translate.x = 0;
-    Translate.y = 0;
-    
-    // init variables for display2
-//    int aiPos    [2] = {0, 0};
-//    int aiPosIncr[2] = {10, 10};
 }
 
 // function to initialize the view to ortho-projection
@@ -98,27 +74,24 @@ void initGL ()
     glLoadIdentity ();                        // Reset project matrix.
     glOrtho (-g_iWidth/2, g_iWidth/2, -g_iHeight/2, g_iHeight/2, 0, 1);    // Map abstract coords directly to window coords.
 
-    // tell GL that we draw to the back buffer and
-    // swap buffers when image is ready to avoid flickering
+    // tell GL that we draw to the back buffer and // swap buffers when image is ready to avoid flickering
     glDrawBuffer (GL_BACK);
 
     // tell which color to use to clear image
     glClearColor (0,0,0,1);
 }
 
-
-int min (int a, int b) { return a>b? a: b; }
-
+// Rotation arounf point, Affine
 Point rotateAroundPtRegular(Point rp, Point cp, float theta)
 {
     Point fxy(
-              ((rp.x - cp.x) * cos(theta*r_direction)) - ((rp.y - cp.y) * sin(theta*r_direction)) + cp.x,
-              ((rp.x - cp.x) * sin(theta*r_direction)) + ((rp.y - cp.y) * cos(theta*r_direction)) + cp.y
+              ((rp.x - cp.x) * cos(theta)) - ((rp.y - cp.y) * sin(theta)) + cp.x,
+              ((rp.x - cp.x) * sin(theta)) + ((rp.y - cp.y) * cos(theta)) + cp.y
               );
-    
     return fxy;
 }
 
+// Setting the translation matrix
 CMat3f transMat(float x, float y) {
     
     CMat3f tran;
@@ -135,7 +108,7 @@ CMat3f transMat(float x, float y) {
     return tran;
 }
 
-
+// Setting the rotation matrix
 CMat3f rotMat(float theta) {
     
     CMat3f rot;
@@ -152,54 +125,36 @@ CMat3f rotMat(float theta) {
     return rot;
 }
 
+// Rotation around point, Homogeneous
 Point rotateAroundPtHomo(Point rp, Point cp, float theta)
 {
-    Point rotatedpPoint;
-    CMat3f rotCalc;
+    CMat3f norm = transMat( cp.x, cp.y);
+    CMat3f rMat = rotMat(theta);
+    CMat3f posTrMat = transMat( rp.x, rp.y);
+    CMat3f negTrMat = transMat( -cp.x, -cp.y);
     
-    CMat3f centralPoint = transMat( cp.y, cp.y);
+    //Can be written differently
+    CMat3f rotationMatric = norm * rMat * posTrMat * negTrMat;
     
-    CMat3f posTranMatrix = transMat( rp.x, rp.y);
-    CMat3f negTranMattrix = transMat( -cp.y, -cp.y);
+    Point rotated;
+    rotated.x = rotationMatric.operator()(0, 2);
+    rotated.y = rotationMatric.operator()(1, 2);
     
-    CMat3f rMatrix = rotMat(theta);
-    
-//    Why this not working??????
-//    rotationMatric = posTrMat * rMat * negTrMat * rax;
-    
-    rotCalc = rMatrix.operator*(rMatrix).operator*(posTranMatrix).operator*(negTranMattrix);
-    
-    rotatedpPoint.x = rotCalc.operator()(0, 2);
-    rotatedpPoint.y = rotCalc.operator()(1, 2);
-    
-    return rotatedpPoint;
+    return rotated;
 }
-
-//Point rotateAroundPtHomo(Point rp, Point cp, float theta)
-//{
-//
-//    //  r = tMatric(1) * rotMatrix * tMatrix(-1)
-//
-////    Point fxy();
-////    return fxy;
-//}
-
 
 // timer callback function
 void timer (int value)
 {
     Point test;
-    
-    //Display 1
-    Earth = rotateAroundPtRegular(Earth, Sun,  0.01745329252);
-    Moon = rotateAroundPtRegular(Moon, Earth,  0.3490658504);
+
+    Earth = rotateAroundPtRegular(Earth, Sun,  -0.01745329252);
+    Moon = rotateAroundPtRegular(Moon, Earth,  -0.3490658504);
     
     Earth_m = rotateAroundPtHomo(Earth_m, Sun_m,  0.01745329252);
-    Moon_m = rotateAroundPtRegular(Moon_m, Earth_m,  0.3490658504);
-//    test = rotateAroundPtHomo(Earth, Sun,  0.01745329252);
-    
-    //Display2
+    Moon_m = rotateAroundPtHomo(Moon_m, Earth_m,  0.3490658504);
 
+    //Display2
     // the last two lines should always be
     glutPostRedisplay ();
     glutTimerFunc (g_iTimerMSecs, timer, 0);    // call timer for next iteration
@@ -274,34 +229,10 @@ void bresenhamCircle(Point mp, int r, Color c){
     glEnd ();
 }
 
-void bresenhamCircleHomo(Point_h mp, int r, Color c){
-    glBegin (GL_POINTS);
-    
-    int x, y, p, d, DSE, DE;
-
-    p = 0;
-    x = p;
-    y = r;
-    d = 5 - 4*r;
-    
-    plotCircle(x, y, mp.x, mp.y, c);
-    
-    while (y>x) {
-        if (d>=0)
-        {
-            DSE = 4*(2*(x-y)+5);
-            d += DSE;
-            x++;
-            y--;
-        } // SE
-        else {
-            DE = 4*(2*x+3);
-            d +=DE ;
-            x++;
-        } // E
-        plotCircle(x, y, mp.x, mp.y, c);
-    }
-    glEnd ();
+void drawingSolarSystem(Point Sun, Point Earth, Point Moon, Color color) {
+    bresenhamCircle(Sun, 25, color);
+    bresenhamCircle(Earth, 15, color);
+    bresenhamCircle(Moon, 7, color);
 }
 
 // display callback function
@@ -309,11 +240,7 @@ void display1 (void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
     
-
-    //Completed the First task
-    bresenhamCircle(Sun, 25, cRed);
-    bresenhamCircle(Earth, 15, cGreen);
-    bresenhamCircle(Moon, 7, cWhite);
+    drawingSolarSystem(Sun, Earth, Moon, cGreen);
 
     glFlush ();
     glutSwapBuffers ();
@@ -325,12 +252,7 @@ void display2 (void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
     
-    bresenhamCircle(Sun_m, 25, cWhite);
-    bresenhamCircle(Earth_m, 15, cRed);
-    bresenhamCircle(Moon_m, 7, cGreen);
-//    Sun_m = transMat(Sun.x, Sun.y);
-//    Earth_m = transMat(Earth.x, Earth.y);
-//    Moon_m = transMat(Moon.x, Moon.y);
+    drawingSolarSystem(Sun_m, Earth_m, Moon_m, cWhite);
         
     glFlush ();
     glutSwapBuffers ();
