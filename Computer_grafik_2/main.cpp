@@ -24,6 +24,8 @@ const int g_iHeight = 400;
 // global variable to tune the timer interval
 int g_iTimerMSecs;
 
+CVec3b sun;
+
 ////////////////////////////////////////////////////////////
 //
 // private, global variables ... replace by your own ones
@@ -31,23 +33,23 @@ int g_iTimerMSecs;
 float r_direction;
 float w_const;
 
+Point Sun_m;
+Point Earth_m;
+Point Moon_m;
+
 //Main points
 Point Sun;
 Point Earth;
 Point Moon;
 
-Point_h Sun_h_2;
-Point_h Earth_h_2;
-Point_h Moon_h_2;
-
-Point Sun_h;
-Point Earth_h;
-Point Moon_h;
+Point Translate;
 
 Color cRed(0.5, 0.1, 0.1);
 Color cGreen(0.1, 0.5, 0.1);
 Color cBlue(0.1, 0.1, 0.5);
 Color cWhite(1, 1, 1);
+
+bool t_done;
 
 // function to initialize our own variables
 void init ()
@@ -65,18 +67,22 @@ void init ()
     Moon.x = 150;
     Moon.y = 0;
     
-    //Display 2
-    w_const = 1.5;
-    if(w_const == 0) {
-        throw std::invalid_argument("W parametr can not be 0!");
-    }
     
-    Sun_h.x = Sun.x/w_const;
-    Sun_h.y = Sun.y/w_const;
-    Earth_h.x = Earth.x/w_const;
-    Earth_h.y = Earth.y/w_const;
-    Moon_h.x = Moon.x/w_const;
-    Moon_h.y = Moon.y/w_const;
+    Sun_m.x = 0;
+    Sun_m.y = 0;
+    Earth_m.x = 100;
+    Earth_m.y = 0;
+    Moon_m.x = 150;
+    Moon_m.y = 0;
+    
+    //Display 2
+//    w_const = 1;
+//    if(w_const == 0) {
+//        throw std::invalid_argument("W parametr can not be 0!");
+//    }
+    
+    Translate.x = 0;
+    Translate.y = 0;
     
     // init variables for display2
 //    int aiPos    [2] = {0, 0};
@@ -113,25 +119,86 @@ Point rotateAroundPtRegular(Point rp, Point cp, float theta)
     return fxy;
 }
 
-Point_h rotateAroundPtHomo(Point_h rp, Point_h cp, float theta)
-{
+CMat3f transMat(float x, float y) {
     
-    rp.x =((rp.x - cp.x) * cos(theta*r_direction)) - ((rp.y - cp.y) * sin(theta*r_direction)) + cp.x;
-    rp.y =((rp.x - cp.x) * sin(theta*r_direction)) + ((rp.y - cp.y) * cos(theta*r_direction)) + cp.y;
+    CMat3f tran;
+    tran(0,0) = 1;
+    tran(0,1) = 0;
+    tran(0,2) = x;
+    tran(1,0) = 0;
+    tran(1,1) = 1;
+    tran(1,2) = y;
+    tran(2,0) = 0;
+    tran(2,1) = 0;
+    tran(2,2) = 1;
     
-    return rp;
+    return tran;
 }
+
+
+CMat3f rotMat(float theta) {
+    
+    CMat3f rot;
+    rot(0,0) = cos(theta);
+    rot(0,1) = -sin(theta);
+    rot(0,2) = 0;
+    rot(1,0) = sin(theta);
+    rot(1,1) = cos(theta);
+    rot(1,2) = 0;
+    rot(2,0) = 0;
+    rot(2,1) = 0;
+    rot(2,2) = 1;
+    
+    return rot;
+}
+
+Point rotateAroundPtHomo(Point rp, Point cp, float theta)
+{
+    Point rotatedpPoint;
+    CMat3f rotCalc;
+    
+    CMat3f centralPoint = transMat( cp.y, cp.y);
+    
+    CMat3f posTranMatrix = transMat( rp.x, rp.y);
+    CMat3f negTranMattrix = transMat( -cp.y, -cp.y);
+    
+    CMat3f rMatrix = rotMat(theta);
+    
+//    Why this not working??????
+//    rotationMatric = posTrMat * rMat * negTrMat * rax;
+    
+    rotCalc = rMatrix.operator*(rMatrix).operator*(posTranMatrix).operator*(negTranMattrix);
+    
+    rotatedpPoint.x = rotCalc.operator()(0, 2);
+    rotatedpPoint.y = rotCalc.operator()(1, 2);
+    
+    return rotatedpPoint;
+}
+
+//Point rotateAroundPtHomo(Point rp, Point cp, float theta)
+//{
+//
+//    //  r = tMatric(1) * rotMatrix * tMatrix(-1)
+//
+////    Point fxy();
+////    return fxy;
+//}
+
 
 // timer callback function
 void timer (int value)
 {
-
+    Point test;
+    
     //Display 1
     Earth = rotateAroundPtRegular(Earth, Sun,  0.01745329252);
     Moon = rotateAroundPtRegular(Moon, Earth,  0.3490658504);
     
-    Earth_h = rotateAroundPtRegular(Earth_h, Sun_h,  0.01745329252);
-    Moon_h = rotateAroundPtRegular(Moon_h, Earth_h,  0.3490658504);
+    Earth_m = rotateAroundPtHomo(Earth_m, Sun_m,  0.01745329252);
+    Moon_m = rotateAroundPtRegular(Moon_m, Earth_m,  0.3490658504);
+//    test = rotateAroundPtHomo(Earth, Sun,  0.01745329252);
+    
+    //Display2
 
     // the last two lines should always be
     glutPostRedisplay ();
@@ -141,7 +208,6 @@ void timer (int value)
 void plotCircle(int x, int y, int px, int py, Color c){
     
     glBegin (GL_POINTS);
-    
     //Hate this part of the code
     Point xy0(x+px,y+py);
     glColor3f (c.r, c.g, c.b);
@@ -242,6 +308,7 @@ void bresenhamCircleHomo(Point_h mp, int r, Color c){
 void display1 (void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
+    
 
     //Completed the First task
     bresenhamCircle(Sun, 25, cRed);
@@ -258,11 +325,13 @@ void display2 (void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
     
-    //2nd Tasks implementation here
-    bresenhamCircle(Sun_h, 25, cRed);
-    bresenhamCircle(Earth_h, 15, cGreen);
-    bresenhamCircle(Moon_h, 7, cWhite);
-    
+    bresenhamCircle(Sun_m, 25, cWhite);
+    bresenhamCircle(Earth_m, 15, cRed);
+    bresenhamCircle(Moon_m, 7, cGreen);
+//    Sun_m = transMat(Sun.x, Sun.y);
+//    Earth_m = transMat(Earth.x, Earth.y);
+//    Moon_m = transMat(Moon.x, Moon.y);
+        
     glFlush ();
     glutSwapBuffers ();
 }
@@ -279,13 +348,6 @@ void keyboard (unsigned char key, int x, int y)
             break;
         case '2':
             glutDisplayFunc (display2);
-            break;
-        case '3':
-            if(r_direction == 1){
-                r_direction = -1;
-            } else {
-                r_direction = 1;
-            }
             break;
         default:
             // do nothing ...
