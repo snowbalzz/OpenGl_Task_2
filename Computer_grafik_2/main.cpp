@@ -30,15 +30,6 @@ int Focal;
 //
 // Variables
 //
-////Display 2
-//Point Sun_m;
-//Point Earth_m;
-//Point Moon_m;
-//
-////Display 1
-//Point Sun;
-//Point Earth;
-//Point Moon;
 
 //Exercise 6 Parametrs
 CVec4f EyePoint;
@@ -88,19 +79,6 @@ void init ()
     ViewDir = vector(0,0,1, 0);
     
     Focal = 300;
-//    Sun.x = 0;
-//    Sun.y = 0;
-//    Earth.x = -100;
-//    Earth.y = 0;
-//    Moon.x = -150;
-//    Moon.y = 0;
-//
-//    Sun_m.x = 0;
-//    Sun_m.y = 0;
-//    Earth_m.x = 100;
-//    Earth_m.y = 0;
-//    Moon_m.x = 150;
-//    Moon_m.y = 0;
 }
 
 // function to initialize the view to ortho-projection
@@ -279,50 +257,6 @@ void bhamLine (int x0, int y0, int x1, int y1, Color c) {
     glEnd ();
 }
 
-//// Rotation arounf point, Affine
-//Point rotPtReg(Point rp, Point cp, float theta)
-//{
-//    Point fxy(
-//              ((rp.x - cp.x) * cos(theta)) - ((rp.y - cp.y) * sin(theta)) + cp.x,
-//              ((rp.x - cp.x) * sin(theta)) + ((rp.y - cp.y) * cos(theta)) + cp.y
-//              );
-//    return fxy;
-//}
-
-//// Setting the translation matrix
-//CMat3f transMat(float x, float y) {
-//
-//    CMat3f tran;
-//    tran(0,0) = 1;
-//    tran(0,1) = 0;
-//    tran(0,2) = x;
-//    tran(1,0) = 0;
-//    tran(1,1) = 1;
-//    tran(1,2) = y;
-//    tran(2,0) = 0;
-//    tran(2,1) = 0;
-//    tran(2,2) = 1;
-//
-//    return tran;
-//}
-
-//// Setting the rotation matrix
-//CMat3f rotMat(float theta) {
-//
-//    CMat3f rot;
-//    rot(0,0) = cos(theta);
-//    rot(0,1) = -sin(theta);
-//    rot(0,2) = 0;
-//    rot(1,0) = sin(theta);
-//    rot(1,1) = cos(theta);
-//    rot(1,2) = 0;
-//    rot(2,0) = 0;
-//    rot(2,1) = 0;
-//    rot(2,2) = 1;
-//
-//    return rot;
-//}
-
 CMat4f projectMat(float d){
     
     CMat4f pot;
@@ -346,6 +280,30 @@ CMat4f projectMat(float d){
     return pot;
 }
 
+CMat4f stepOneRotate(float angle) {
+    
+    CMat4f one;
+
+    one(0,0) = 0;
+    one(0,1) = 0;
+    one(0,2) = 0;
+    one(0,3) = 0;
+    one(1,0) = 0;
+    one(1,1) = 0;
+    one(1,2) = 0;
+    one(1,3) = 0;
+    one(2,0) = 0;
+    one(2,1) = 0;
+    one(2,2) = 0;
+    one(2,3) = 0;
+    one(3,0) = 0;
+    one(3,1) = 0;
+    one(3,2) = 0;
+    one(3,3) = 0;
+    
+    
+    return  one;
+}
 
 Point calculateCube(CVec4f cor, CMat4f pro){
     
@@ -486,33 +444,9 @@ void decFocal(){
     Focal -= 10;
 }
 
-// Rotation around point, Homogeneous
-//Point rotPtHomo(Point rp, Point cp, float theta)
-//{
-//    CMat3f nMat = transMat( cp.x, cp.y);
-//    CMat3f rMat = rotMat(theta);
-//    CMat3f pMat = transMat( rp.x, rp.y);
-//    CMat3f ngMat = transMat( -cp.x, -cp.y);
-//
-//    CMat3f calc = nMat * rMat * pMat * ngMat;
-//
-//    Point r;
-//    r.x = calc(0, 2);
-//    r.y = calc(1, 2);
-//
-//    return r;
-//}
-
 // timer callback function
 void timer (int value)
 {
-
-//    Earth = rotPtReg(Earth, Sun,  0.00645329252);
-//    Moon = rotPtReg(Moon, Earth,  0.1290658504);
-//
-//    Earth_m = rotPtHomo(Earth_m, Sun_m,  0.005);
-//    Moon_m = rotPtHomo(Moon_m, Earth_m,  0.5);
-    
     calcPoints(cube, Focal);
 
     //Display2
@@ -521,50 +455,6 @@ void timer (int value)
     glutTimerFunc (g_iTimerMSecs, timer, 0);    // call timer for next iteration
 }
 
-
-//void plotCircle(int x, int y, int px, int py, Color c){
-//
-//    glBegin (GL_POINTS);
-//
-//    glColor3f (c.r, c.g, c.b);
-//
-//    //Hate this part of the code
-//    glVertex2i (x+px,y+py);
-//    glVertex2i (y+px,x+py);
-//    glVertex2i (-x+px,y+py);
-//    glVertex2i (-y+px,x+py);
-//    glVertex2i (x+px,-y+py);
-//    glVertex2i (y+px,-x+py);
-//    glVertex2i (-x+px,-y+py);
-//    glVertex2i (-y+px,-x+py);
-//
-//    glEnd ();
-//}
-
-//void drawCube(int cube[8][4], float d, Color c){
-//
-//    Point newCube[8];
-//
-//    for (int i=0; i < 8; i++) {
-//        newCube[i] = calculateCube(vector(cube[i][0], cube[i][1], cube[i][2], cube[i][3]), projectMat(d));
-//    }
-//
-//    bhamLine(newCube[0].x, newCube[0].y, newCube[1].x, newCube[1].y, c);
-//    bhamLine(newCube[1].x, newCube[1].y, newCube[2].x, newCube[2].y, c);
-//    bhamLine(newCube[2].x, newCube[2].y, newCube[3].x, newCube[3].y, c);
-//    bhamLine(newCube[3].x, newCube[3].y, newCube[0].x, newCube[0].y, c);
-//
-//    bhamLine(newCube[0].x, newCube[0].y, newCube[4].x, newCube[4].y, c);
-//    bhamLine(newCube[1].x, newCube[1].y, newCube[5].x, newCube[5].y, c);
-//    bhamLine(newCube[2].x, newCube[2].y, newCube[6].x, newCube[6].y, c);
-//    bhamLine(newCube[3].x, newCube[3].y, newCube[7].x, newCube[7].y, c);
-//
-//    bhamLine(newCube[4].x, newCube[4].y, newCube[5].x, newCube[5].y, c);
-//    bhamLine(newCube[5].x, newCube[5].y, newCube[6].x, newCube[6].y, c);
-//    bhamLine(newCube[6].x, newCube[6].y, newCube[7].x, newCube[7].y, c);
-//    bhamLine(newCube[7].x, newCube[7].y, newCube[4].x, newCube[4].y, c);
-//
-//}
 
 void drawCube2(Point newCube[8], Color c){
     
@@ -585,39 +475,6 @@ void drawCube2(Point newCube[8], Color c){
 
 }
 
-//void bresenhamCircle(Point mp, int r, Color c){
-//
-//    int x, y, p, d, DSE, DE;
-//
-//    p = 0;
-//    x = p;
-//    y = r;
-//    d = 5 - 4*r;
-//
-//    plotCircle(x, y, mp.x, mp.y, c);
-//
-//    while (y>x) {
-//        if (d>=0)
-//        {
-//            DSE = 4*(2*(x-y)+5);
-//            d += DSE;
-//            x++;
-//            y--;
-//        } // SE
-//        else {
-//            DE = 4*(2*x+3);
-//            d +=DE ;
-//            x++;
-//        } // E
-//        plotCircle(x, y, mp.x, mp.y, c);
-//    }
-//}
-
-//void drawingSolarSystem(Point Sun, Point Earth, Point Moon, Color color) {
-//    bresenhamCircle(Sun, 25, cRed);
-//    bresenhamCircle(Earth, 15, color);
-//    bresenhamCircle(Moon, 7, color);
-//}
 
 // display callback function
 void display1 (void)
