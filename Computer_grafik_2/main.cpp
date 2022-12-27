@@ -29,6 +29,9 @@ float z_angle;
 float y_angle;
 float x_angle;
 
+CVec4f M;
+float r;
+
 ////////////////////////////////////////////////////////////
 //
 // Variables
@@ -58,49 +61,49 @@ Color cWhite(1, 1, 1);
 //    {50, -50, -25, 1},
 //};
 //
-int  cube[8][4] = {
-    {50, 50, 50, 1},
-    {0, 50, 50, 1},
-    {0, 0, 50, 1},
-    {50, 0, 50, 1},
-    {50, 50, 0, 1},
-    {0, 50, 0, 1},
-    {0, 0, 0, 1},
-    {50, 0, 0, 1},
-};
-
-int  cube2[8][4] = {
-    {-50, -50, 50, 1},
-    {0, -50, 50, 1},
-    {0, 0, 50, 1},
-    {-50, 0, 50, 1},
-    {-50, -50, 0, 1},
-    {0, -50, 0, 1},
-    {0, 0, 0, 1},
-    {-50, 0, 0, 1},
-};
-
-//int  cube2[8][4] = {
-//    {60, 60, 100, 1},
-//    {60, -60, 100, 1},
-//    {100, -60, 100, 1},
-//    {100, 60, 100, 1},
-//    {60, 60, 0, 1},
-//    {60, -60, 0, 1},
-//    {100, -60, 0, 1},
-//    {100, 60, 0, 1},
+//int  cube[8][4] = {
+//    {50, 50, 25, 1},
+//    {0, 50, 25, 1},
+//    {0, 0, 25, 1},
+//    {50, 0, 25, 1},
+//    {50, 50, -25, 1},
+//    {0, 50, -25, 1},
+//    {0, 0, -25, 1},
+//    {50, 0, -25, 1},
 //};
-
-int  cube3[8][4] = {
-    {-60, 60, 100, 1},
-    {-60, -60, 100, 1},
-    {-100, -60, 100, 1},
-    {-100, 60, 100, 1},
-    {-60, 60, 0, 1},
-    {-60, -60, 0, 1},
-    {-100, -60, 0, 1},
-    {-100, 60, 0, 1},
-};
+//
+//int  cube2[8][4] = {
+//    {-50, -50, 25, 1},
+//    {0, -50, 25, 1},
+//    {0, 0, 25, 1},
+//    {-50, 0, 25, 1},
+//    {-50, -50, -25, 1},
+//    {0, -50, -25, 1},
+//    {0, 0, -25, 1},
+//    {-50, 0, -25, 1},
+//};
+//
+////int  cube2[8][4] = {
+////    {60, 60, 100, 1},
+////    {60, -60, 100, 1},
+////    {100, -60, 100, 1},
+////    {100, 60, 100, 1},
+////    {60, 60, 0, 1},
+////    {60, -60, 0, 1},
+////    {100, -60, 0, 1},
+////    {100, 60, 0, 1},
+////};
+//
+//int  cube3[8][4] = {
+//    {-60, 60, 100, 1},
+//    {-60, -60, 100, 1},
+//    {-100, -60, 100, 1},
+//    {-100, 60, 100, 1},
+//    {-60, 60, 0, 1},
+//    {-60, -60, 0, 1},
+//    {-100, -60, 0, 1},
+//    {-100, 60, 0, 1},
+//};
 
 Point cube_m[8];
 Point cube_m_2[8];
@@ -127,9 +130,10 @@ void init ()
     // init timer interval
     g_iTimerMSecs = 10;
     
-    ViewOrigin = vector(0, 0, 0, 1);
-    ViewUp = vector(0,1,0, 0);
-    ViewDir = vector(0,0,1, 0);
+    EyePoint = vector(0, 0, 100, 1);
+    ViewDir = vector(0,0,100, 0);
+    M = vector(0,0, 0, 1);
+    r = 50;
     
     Focal = 300;
 }
@@ -308,6 +312,55 @@ void bhamLine (int x0, int y0, int x1, int y1, Color c) {
     }
     
     glEnd ();
+}
+
+
+//Need to retrite in vectors
+void plotCircle(int x, int y, int px, int py, Color c){
+
+    glBegin (GL_POINTS);
+
+    glColor3f (c.r, c.g, c.b);
+
+    //Hate this part of the code
+    glVertex2i (x+px,y+py);
+    glVertex2i (y+px,x+py);
+    glVertex2i (-x+px,y+py);
+    glVertex2i (-y+px,x+py);
+    glVertex2i (x+px,-y+py);
+    glVertex2i (y+px,-x+py);
+    glVertex2i (-x+px,-y+py);
+    glVertex2i (-y+px,-x+py);
+
+    glEnd ();
+}
+
+void bresenhamCircle(CVec4f mp, int r, Color c){
+
+    int x, y, p, d, DSE, DE;
+
+    p = 0;
+    x = p;
+    y = r;
+    d = 5 - 4*r;
+
+    plotCircle(x, y, mp(0), mp(1), c);
+
+    while (y>x) {
+        if (d>=0)
+        {
+            DSE = 4*(2*(x-y)+5);
+            d += DSE;
+            x++;
+            y--;
+        } // SE
+        else {
+            DE = 4*(2*x+3);
+            d +=DE ;
+            x++;
+        } // E
+        plotCircle(x, y, mp(0), mp(1), c);
+    }
 }
 
 CMat4f projectMat(float d){
@@ -563,27 +616,27 @@ void decFocal(){
 }
 
 void PosZAxis(){
-    z_angle += 0.1;
+    z_angle += 0.2;
 }
 
 void NegZAxis(){
-    z_angle -= 0.1;
+    z_angle -= 0.2;
 }
 
 void PosYAxis(){
-    y_angle += 0.1;
+    y_angle += 0.2;
 }
 
 void NegYAxis(){
-    y_angle -= 0.1;
+    y_angle -= 0.2;
 }
 
 void PosXAxis(){
-    x_angle += 0.1;
+    x_angle += 0.2;
 }
 
 void NegXAxis(){
-    x_angle -= 0.1;
+    x_angle -= 0.2;
 }
 
 void reset(){
@@ -596,9 +649,9 @@ void reset(){
 // timer callback function
 void timer (int value)
 {
-    calcPoints(cube, Focal, cube_m);
-    calcPoints(cube2, Focal, cube_m_2);
-    calcPoints(cube3, Focal, cube_m_3);
+//    calcPoints(cube, Focal, cube_m);
+//    calcPoints(cube2, Focal, cube_m_2);
+//    calcPoints(cube3, Focal, cube_m_3);
 
 
     //Display2
@@ -633,6 +686,7 @@ void display1 (void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
 
+    bresenhamCircle(M, r, cRed);
 
     glFlush ();
     glutSwapBuffers ();
@@ -643,8 +697,8 @@ void display2 (void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
 
-    drawCube2(cube_m, cWhite);
-    drawCube2(cube_m_2, cWhite);
+//    drawCube2(cube_m, cWhite);
+//    drawCube2(cube_m_2, cWhite);
 //    drawCube2(cube_m_3, cWhite);
 
 
@@ -659,32 +713,35 @@ void keyboard (unsigned char key, int x, int y)
         case 'Q':
             exit (0); // quit program
             break;
-        case 'f':
-            incFocal();
-            break;
-        case 'F':
-            decFocal();
-            break;
-        case 'z':
-            NegZAxis();
-            break;
-        case 'Z':
-            PosZAxis();
-            break;
-        case 'y':
-            NegYAxis();
-            break;
-        case 'Y':
-            PosYAxis();
-            break;
-        case 'x':
-            NegXAxis();
-            break;
-        case 'X':
-            PosXAxis();
-            break;
-        case 'R':
-            reset();
+//        case 'f':
+//            incFocal();
+//            break;
+//        case 'F':
+//            decFocal();
+//            break;
+//        case 'z':
+//            NegZAxis();
+//            break;
+//        case 'Z':
+//            PosZAxis();
+//            break;
+//        case 'y':
+//            NegYAxis();
+//            break;
+//        case 'Y':
+//            PosYAxis();
+//            break;
+//        case 'x':
+//            NegXAxis();
+//            break;
+//        case 'X':
+//            PosXAxis();
+//            break;
+//        case 'R':
+//            reset();
+//            break;
+        case '1':
+            glutDisplayFunc (display1);
             break;
         default:
             // do nothing ...
@@ -706,7 +763,7 @@ int main (int argc, char **argv)
     // assign callbacks
     glutTimerFunc (10, timer, 0);
     glutKeyboardFunc (keyboard);
-    glutDisplayFunc (display2);
+    glutDisplayFunc (display1);
     // you might want to add a resize function analog to
     // �bung1 using code similar to the initGL function ...
 
