@@ -87,6 +87,43 @@ void initGL ()
     glClearColor (0,0,0,1);
 }
 
+CVec3f calcNormal(CVec3f hitPos) {
+    CVec3f normal;
+    
+    normal(0) = hitPos(0);
+    normal(1) = hitPos(1);
+    normal(2) = hitPos(2);
+    
+    float calculation = sqrt(normal(0) * normal(0) + normal(1) * normal(1) + normal(2) * normal(2));
+
+    normal(0) /= calculation;
+    normal(1) /= calculation;
+    normal(2) /= calculation;
+    
+    return normal;
+}
+
+CVec3f phong(CVec3f HitPos, CVec3f EyePos) {
+    CVec3f calc;
+    
+    CVec3f LightPos = vector(100, 100, 100);
+    CVec3f LightColor = vector(1, 1, 1);
+    
+    CVec3f NormalHit = calcNormal(HitPos);
+    
+    CVec3f LightDir = LightPos - HitPos;
+    float DiffuseCoeff = std::max(0.0f, NormalHit * LightDir);
+
+    
+    CVec3f Halfway = (LightDir + (EyePos - HitPos));
+    float Spec = std::max(0.0f, NormalHit * Halfway);
+    float SpecularCoeff = std::pow(Spec, 40);
+
+    return LightColor * (ka + DiffuseCoeff * kd + SpecularCoeff * ks);
+    
+    return calc;
+}
+
 CVec3f intersect (CVec3f ep, CVec3f vd){
     CVec3f result;
     
@@ -133,10 +170,8 @@ void display1 (void)
     
     CVec3f inter = intersect(EyePoint,ViewDir);
     
-    std::cout << inter(0) << inter(1) << inter(2) << std::endl;
+    CVec3f pCalc = phong(inter, EyePoint);
     
-//    bresenhamCircle(m, r, cRed);
-
     glFlush ();
     glutSwapBuffers ();
 }
@@ -145,11 +180,6 @@ void display1 (void)
 void display2 (void)
 {
     glClear (GL_COLOR_BUFFER_BIT);
-
-//    drawCube2(cube_m, cWhite);
-//    drawCube2(cube_m_2, cWhite);
-//    drawCube2(cube_m_3, cWhite);
-
 
     glFlush ();
     glutSwapBuffers ();
