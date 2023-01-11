@@ -29,6 +29,8 @@ float z_angle;
 float y_angle;
 float x_angle;
 
+float rotIndex;
+
 ////////////////////////////////////////////////////////////
 //
 // Variables
@@ -47,17 +49,6 @@ Color cGreen(0.1, 0.5, 0.1);
 Color cBlue(0.1, 0.1, 0.5);
 Color cWhite(1, 1, 1);
 
-//int  cube[8][4] = {
-//    {50, 50, 25, 1},
-//    {-50, 50, 25, 1},
-//    {-50, -50, 25, 1},
-//    {50, -50, 25, 1},
-//    {50, 50, -25, 1},
-//    {-50, 50, -25, 1},
-//    {-50, -50, -25, 1},
-//    {50, -50, -25, 1},
-//};
-//
 int  cube[8][4] = {
     {50, 50, 50, 1},
     {0, 50, 50, 1},
@@ -80,31 +71,33 @@ int  cube2[8][4] = {
     {-50, 0, 0, 1},
 };
 
-//int  cube2[8][4] = {
-//    {60, 60, 100, 1},
-//    {60, -60, 100, 1},
-//    {100, -60, 100, 1},
-//    {100, 60, 100, 1},
-//    {60, 60, 0, 1},
-//    {60, -60, 0, 1},
-//    {100, -60, 0, 1},
-//    {100, 60, 0, 1},
-//};
-
 int  cube3[8][4] = {
-    {-60, 60, 100, 1},
-    {-60, -60, 100, 1},
-    {-100, -60, 100, 1},
-    {-100, 60, 100, 1},
-    {-60, 60, 0, 1},
-    {-60, -60, 0, 1},
-    {-100, -60, 0, 1},
-    {-100, 60, 0, 1},
+    {-50, 50, 50, 1},
+    {0, 50, 50, 1},
+    {0, 0, 50, 1},
+    {-50, 0, 50, 1},
+    {-50, 50, 0, 1},
+    {0, 50, 0, 1},
+    {0, 0, 0, 1},
+    {-50, 0, 0, 1},
 };
+
+int  cube4[8][4] = {
+    {50, -50, 50, 1},
+    {0, -50, 50, 1},
+    {0, 0, 50, 1},
+    {50, 0, 50, 1},
+    {50, -50, 0, 1},
+    {0, -50, 0, 1},
+    {0, 0, 0, 1},
+    {50, 0, 0, 1},
+};
+
 
 Point cube_m[8];
 Point cube_m_2[8];
 Point cube_m_3[8];
+Point cube_m_4[8];
 
 CVec4f vector(int x, int y, int z, int w){
     CVec4f cor;
@@ -123,6 +116,8 @@ void init ()
     z_angle = 0;
     x_angle = 0;
     y_angle = 0;
+    
+    rotIndex = 0.05;
     
     // init timer interval
     g_iTimerMSecs = 10;
@@ -333,10 +328,8 @@ CMat4f projectMat(float d){
     return pot;
 }
 
-
-
 //Step One
-CMat4f stepOneRotate(float angle) {
+CMat4f zRotate(float angle) {
     
     CMat4f one;
 
@@ -361,7 +354,7 @@ CMat4f stepOneRotate(float angle) {
 }
 
 //Step One
-CMat4f stepThreeRotate(float angle) {
+CMat4f xRotate(float angle) {
     
     CMat4f one;
 
@@ -389,7 +382,7 @@ CMat4f stepThreeRotate(float angle) {
 }
 
 //Step two
-CMat4f stepTwoRotate(float angle) {
+CMat4f yRotate(float angle) {
     
     CMat4f two;
     two(0,0) = cos(angle);
@@ -417,8 +410,7 @@ CMat4f stepTwoRotate(float angle) {
 
 //Not sure if this is how the teacher wanted to do it.
 CMat4f xyzRotation() {
-    CMat4f calc = stepThreeRotate(x_angle) * stepTwoRotate(y_angle) * stepOneRotate(z_angle);
-    
+    CMat4f calc = xRotate(x_angle) * yRotate(y_angle) * zRotate(z_angle);
     return calc;
 }
 
@@ -539,7 +531,7 @@ CMat4f finalMat(){
 
 CVec4f projectZallg(CVec4f cor){
     
-    CVec4f calc = finalMat() * cor * xyzRotation();
+    CVec4f calc = finalMat() * cor * xyzRotation(); 
     
     return calc;
 }
@@ -563,27 +555,27 @@ void decFocal(){
 }
 
 void PosZAxis(){
-    z_angle += 0.1;
+    z_angle +=rotIndex;
 }
 
 void NegZAxis(){
-    z_angle -= 0.1;
+    z_angle -=rotIndex;
 }
 
 void PosYAxis(){
-    y_angle += 0.1;
+    y_angle +=rotIndex;
 }
 
 void NegYAxis(){
-    y_angle -= 0.1;
+    y_angle -=rotIndex;
 }
 
 void PosXAxis(){
-    x_angle += 0.1;
+    x_angle +=rotIndex;
 }
 
 void NegXAxis(){
-    x_angle -= 0.1;
+    x_angle -=rotIndex;
 }
 
 void reset(){
@@ -599,7 +591,7 @@ void timer (int value)
     calcPoints(cube, Focal, cube_m);
     calcPoints(cube2, Focal, cube_m_2);
     calcPoints(cube3, Focal, cube_m_3);
-
+    calcPoints(cube4, Focal, cube_m_4);
 
     //Display2
     // the last two lines should always be
@@ -645,7 +637,8 @@ void display2 (void)
 
     drawCube2(cube_m, cWhite);
     drawCube2(cube_m_2, cWhite);
-//    drawCube2(cube_m_3, cWhite);
+    drawCube2(cube_m_3, cWhite);
+    drawCube2(cube_m_4, cWhite);
 
 
     glFlush ();
