@@ -554,34 +554,31 @@ void decFocal(){
     Focal -= 10;
 }
 
-void PosZAxis(){
-    z_angle +=rotIndex;
+void ZAxis(float angle){
+    ViewOrigin = ViewOrigin * zRotate(angle);
+    ViewDir = ViewDir * zRotate(angle);
+    ViewUp = ViewUp * zRotate(angle);
 }
 
-void NegZAxis(){
-    z_angle -=rotIndex;
+
+void YAxis(float angle){
+    ViewOrigin = ViewOrigin * yRotate(angle);
+    ViewDir = ViewDir * yRotate(angle);
+    ViewUp = ViewUp * yRotate(angle);
 }
 
-void PosYAxis(){
-    y_angle +=rotIndex;
-}
-
-void NegYAxis(){
-    y_angle -=rotIndex;
-}
-
-void PosXAxis(){
-    x_angle +=rotIndex;
-}
-
-void NegXAxis(){
-    x_angle -=rotIndex;
+//Horizon is the cross product of view dir and up!
+void XAxis(float angle){
+    ViewOrigin = ViewOrigin * xRotate(angle);
+    ViewDir = ViewDir * xRotate(angle);
+    ViewUp = ViewUp * xRotate(angle);
 }
 
 void reset(){
-    z_angle=0;
-    y_angle=0;
-    x_angle=0;
+    ViewOrigin = vector(0, 0, 0, 1);
+    ViewUp = vector(0,1,0, 0);
+    ViewDir = vector(0,0,1, 0);
+    Focal = 300;
 }
 
 
@@ -659,22 +656,22 @@ void keyboard (unsigned char key, int x, int y)
             decFocal();
             break;
         case 'z':
-            NegZAxis();
+            ZAxis(-0.1);
             break;
         case 'Z':
-            PosZAxis();
+            ZAxis(0.1);
             break;
         case 'y':
-            NegYAxis();
+            YAxis(-0.1);
             break;
         case 'Y':
-            PosYAxis();
+            YAxis(0.1);
             break;
         case 'x':
-            NegXAxis();
+            XAxis(-0.1);
             break;
         case 'X':
-            PosXAxis();
+            XAxis(0.1);
             break;
         case 'R':
             reset();
